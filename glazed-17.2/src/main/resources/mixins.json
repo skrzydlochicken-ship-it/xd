@@ -1,0 +1,22 @@
+{
+  "required": true,
+  "package": "com.nnpg.glazed.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [],
+  "client": [
+    "GlazedTitleBackgroundMixin",
+    "SwingDurationMixin",
+    "HandledScreenMixin",
+    "DefaultSettingsWidgetFactoryAccessor",
+    "DefaultSettingsWidgetFactoryMixin",
+    "ClientPlayNetworkHandlerMixin",
+    "InGameHudMixin",
+    "CameraMixin",
+    "EntityMixin",
+    "GameRendererMixin",
+    "TridentItemMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
