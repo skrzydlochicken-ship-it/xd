@@ -43,6 +43,7 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
 	it.options.release = 21
+	it.options.compilerArgs += ["-Xmaxerrs", "5000"]
 }
 
 java {
