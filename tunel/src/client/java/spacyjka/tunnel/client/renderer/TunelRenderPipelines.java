@@ -1,0 +1,238 @@
+/*
+ * This file is part of the Meteor Client distribution (https://github.com/MeteorDevelopment/meteor-client).
+ * Copyright (c) Meteor Development.
+ */
+
+package spacyjka.tunnel.client.renderer;
+
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.DepthTestFunction;
+import com.mojang.blaze3d.shaders.UniformType;
+import com.mojang.blaze3d.systems.GpuDevice;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import spacyjka.tunnel.client.TunelClient;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.packs.resources.ResourceManager;
+import org.apache.commons.io.IOUtils;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class TunelRenderPipelines {
+    private static final List<RenderPipeline> PIPELINES = new ArrayList<>();
+
+    // Snippets
+
+    private static final RenderPipeline.Snippet MESH_UNIFORMS = RenderPipeline.builder()
+        .withUniform("MeshData", UniformType.UNIFORM_BUFFER)
+        .buildSnippet();
+
+    // World
+
+    public static final RenderPipeline WORLD_COLORED = add(new ExtendedRenderPipelineBuilder(MESH_UNIFORMS)
+        .withLocation(TunelClient.identifier("pipeline/world_colored"))
+        .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLES)
+        .withVertexShader(TunelClient.identifier("shaders/pos_color.vert"))
+        .withFragmentShader(TunelClient.identifier("shaders/pos_color.frag"))
+        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+        .withDepthWrite(false)
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withCull(false)
+        .build()
+    );
+
+    public static final RenderPipeline WORLD_COLORED_LINES = add(new ExtendedRenderPipelineBuilder(MESH_UNIFORMS)
+        .withLineSmooth()
+        .withLocation(TunelClient.identifier("pipeline/world_colored_lines"))
+        .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.DEBUG_LINES)
+        .withVertexShader(TunelClient.identifier("shaders/pos_color.vert"))
+        .withFragmentShader(TunelClient.identifier("shaders/pos_color.frag"))
+        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+        .withDepthWrite(false)
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withCull(false)
+        .build()
+    );
+
+    public static final RenderPipeline WORLD_COLORED_DEPTH = add(new ExtendedRenderPipelineBuilder(MESH_UNIFORMS)
+        .withLocation(TunelClient.identifier("pipeline/world_colored_depth"))
+        .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLES)
+        .withVertexShader(TunelClient.identifier("shaders/pos_color.vert"))
+        .withFragmentShader(TunelClient.identifier("shaders/pos_color.frag"))
+        .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+        .withDepthWrite(false)
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withCull(false)
+        .build()
+    );
+
+    public static final RenderPipeline WORLD_COLORED_LINES_DEPTH = add(new ExtendedRenderPipelineBuilder(MESH_UNIFORMS)
+        .withLineSmooth()
+        .withLocation(TunelClient.identifier("pipeline/world_colored_lines_depth"))
+        .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.DEBUG_LINES)
+        .withVertexShader(TunelClient.identifier("shaders/pos_color.vert"))
+        .withFragmentShader(TunelClient.identifier("shaders/pos_color.frag"))
+        .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+        .withDepthWrite(false)
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withCull(false)
+        .build()
+    );
+
+    // UI
+
+    public static final RenderPipeline UI_COLORED = add(new ExtendedRenderPipelineBuilder(MESH_UNIFORMS)
+        .withLocation(TunelClient.identifier("pipeline/ui_colored"))
+        .withVertexFormat(TunelVertexFormats.POS2_COLOR, VertexFormat.Mode.TRIANGLES)
+        .withVertexShader(TunelClient.identifier("shaders/pos_color.vert"))
+        .withFragmentShader(TunelClient.identifier("shaders/pos_color.frag"))
+        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+        .withDepthWrite(false)
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withCull(true)
+        .build()
+    );
+
+    public static final RenderPipeline UI_COLORED_LINES = add(new ExtendedRenderPipelineBuilder(MESH_UNIFORMS)
+        .withLocation(TunelClient.identifier("pipeline/ui_colored_lines"))
+        .withVertexFormat(TunelVertexFormats.POS2_COLOR, VertexFormat.Mode.DEBUG_LINES)
+        .withVertexShader(TunelClient.identifier("shaders/pos_color.vert"))
+        .withFragmentShader(TunelClient.identifier("shaders/pos_color.frag"))
+        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+        .withDepthWrite(false)
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withCull(true)
+        .build()
+    );
+
+    public static final RenderPipeline UI_TEXTURED = add(new ExtendedRenderPipelineBuilder(MESH_UNIFORMS)
+        .withLocation(TunelClient.identifier("pipeline/ui_textured"))
+        .withVertexFormat(TunelVertexFormats.POS2_TEXTURE_COLOR, VertexFormat.Mode.TRIANGLES)
+        .withVertexShader(TunelClient.identifier("shaders/pos_tex_color.vert"))
+        .withFragmentShader(TunelClient.identifier("shaders/pos_tex_color.frag"))
+        .withSampler("u_Texture")
+        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+        .withDepthWrite(false)
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withCull(true)
+        .build()
+    );
+
+    public static final RenderPipeline UI_TEXT = add(new ExtendedRenderPipelineBuilder(MESH_UNIFORMS)
+        .withLocation(TunelClient.identifier("pipeline/ui_text"))
+        .withVertexFormat(TunelVertexFormats.POS2_TEXTURE_COLOR, VertexFormat.Mode.TRIANGLES)
+        .withVertexShader(TunelClient.identifier("shaders/text.vert"))
+        .withFragmentShader(TunelClient.identifier("shaders/text.frag"))
+        .withSampler("u_Texture")
+        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+        .withDepthWrite(false)
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withCull(true)
+        .build()
+    );
+
+    // Post Process
+
+    public static final RenderPipeline POST_OUTLINE = add(new ExtendedRenderPipelineBuilder()
+        .withLocation(TunelClient.identifier("pipeline/post/outline"))
+        .withVertexFormat(TunelVertexFormats.POS2, VertexFormat.Mode.TRIANGLES)
+        .withVertexShader(TunelClient.identifier("shaders/post-process/base.vert"))
+        .withFragmentShader(TunelClient.identifier("shaders/post-process/outline.frag"))
+        .withSampler("u_Texture")
+        .withUniform("PostData", UniformType.UNIFORM_BUFFER)
+        .withUniform("OutlineData", UniformType.UNIFORM_BUFFER)
+        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+        .withDepthWrite(false)
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withCull(false)
+        .build()
+    );
+
+    public static final RenderPipeline POST_IMAGE = add(new ExtendedRenderPipelineBuilder(MESH_UNIFORMS)
+        .withLocation(TunelClient.identifier("pipeline/post/image"))
+        .withVertexFormat(TunelVertexFormats.POS2, VertexFormat.Mode.TRIANGLES)
+        .withVertexShader(TunelClient.identifier("shaders/post-process/base.vert"))
+        .withFragmentShader(TunelClient.identifier("shaders/post-process/image.frag"))
+        .withSampler("u_Texture")
+        .withSampler("u_TextureI")
+        .withUniform("PostData", UniformType.UNIFORM_BUFFER)
+        .withUniform("ImageData", UniformType.UNIFORM_BUFFER)
+        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+        .withDepthWrite(false)
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withCull(false)
+        .build()
+    );
+
+    // Blur
+
+    public static final RenderPipeline BLUR_DOWN = add(new ExtendedRenderPipelineBuilder(MESH_UNIFORMS)
+        .withLocation(TunelClient.identifier("pipeline/blur/down"))
+        .withVertexFormat(TunelVertexFormats.POS2, VertexFormat.Mode.TRIANGLES)
+        .withVertexShader(TunelClient.identifier("shaders/blur.vert"))
+        .withFragmentShader(TunelClient.identifier("shaders/blur_down.frag"))
+        .withSampler("u_Texture")
+        .withUniform("BlurData", UniformType.UNIFORM_BUFFER)
+        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+        .withDepthWrite(false)
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withCull(false)
+        .build()
+    );
+
+    public static final RenderPipeline BLUR_UP = add(new ExtendedRenderPipelineBuilder(MESH_UNIFORMS)
+        .withLocation(TunelClient.identifier("pipeline/blur/up"))
+        .withVertexFormat(TunelVertexFormats.POS2, VertexFormat.Mode.TRIANGLES)
+        .withVertexShader(TunelClient.identifier("shaders/blur.vert"))
+        .withFragmentShader(TunelClient.identifier("shaders/blur_up.frag"))
+        .withSampler("u_Texture")
+        .withUniform("BlurData", UniformType.UNIFORM_BUFFER)
+        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+        .withDepthWrite(false)
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withCull(false)
+        .build()
+    );
+
+    public static final RenderPipeline BLUR_PASSTHROUGH = add(new ExtendedRenderPipelineBuilder(MESH_UNIFORMS)
+        .withLocation(TunelClient.identifier("pipeline/blur/up"))
+        .withVertexFormat(TunelVertexFormats.POS2, VertexFormat.Mode.TRIANGLES)
+        .withVertexShader(TunelClient.identifier("shaders/passthrough.vert"))
+        .withFragmentShader(TunelClient.identifier("shaders/passthrough.frag"))
+        .withSampler("u_Texture")
+        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+        .withDepthWrite(false)
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withCull(false)
+        .build()
+    );
+
+    private static RenderPipeline add(RenderPipeline pipeline) {
+        PIPELINES.add(pipeline);
+        return pipeline;
+    }
+
+    public static void precompile() {
+        GpuDevice device = RenderSystem.getDevice();
+        ResourceManager resources = Minecraft.getInstance().getResourceManager();
+
+        for (RenderPipeline pipeline : PIPELINES) {
+            device.precompilePipeline(pipeline, (identifier, shaderType) -> {
+                var resource = resources.getResource(identifier).get();
+
+                try (var in = resource.open()) {
+                    return IOUtils.toString(in, StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+    }
+
+    private TunelRenderPipelines() {}
+}
