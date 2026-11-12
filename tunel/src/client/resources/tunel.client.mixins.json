@@ -3,7 +3,21 @@
 	"package": "spacyjka.tunnel.client.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ExampleClientMixin"
+		"CachedOrthoProjectionMatrixBufferAccessor",
+		"ClientChunkCacheAccessor",
+		"ClientChunkCacheStorageAccessor",
+		"ClientLevelMixin",
+		"ClientPacketListenerMixin",
+		"GameRendererMixin",
+		"GlCommandEncoderMixin",
+		"GlDeviceMixin",
+		"KeyMappingAccessor",
+		"KeyboardHandlerMixin",
+		"MinecraftMixin",
+		"MouseHandlerMixin",
+		"RenderPipelineMixin",
+		"RenderSystemMixin",
+		"ShaderManagerMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -3,7 +3,7 @@
 	"id": "tunel",
 	"version": "${version}",
 	"name": "Tunel",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Hole, tunnel and staircase ESP plus covered hole detection, configured through a click GUI (default key: O).",
 	"authors": [
 		"Me!"
 	],
@@ -13,6 +13,7 @@
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/tunel/icon.png",
+	"accessWidener": "tunel.accesswidener",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
