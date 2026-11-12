@@ -1,0 +1,5 @@
+accessWidener	v2	named
+
+accessible   class   net/minecraft/client/multiplayer/ClientChunkCache$Storage
+accessible   method  com/mojang/blaze3d/pipeline/RenderPipeline$Builder <init> ()V
+accessible   method  com/mojang/blaze3d/pipeline/RenderPipeline$Builder withSnippet (Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;)V
